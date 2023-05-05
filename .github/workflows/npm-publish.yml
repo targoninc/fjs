@@ -19,7 +19,7 @@ jobs:
         run: npm ci
       - name: Verify NPM package version
         run: |
-          PACKAGE_VERSION=$(npm list @targoninc/fjs --json | jq -r '.dependencies["@targoninc/fjs"].version')
+          PACKAGE_VERSION=$(npm show @targoninc/fjs version)
           echo "Package version: ${PACKAGE_VERSION}"
           echo "Package version in package.json: $(jq -r .version package.json)"
           if [ -z "${PACKAGE_VERSION}" ]; then

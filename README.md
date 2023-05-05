@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-npm install @targon/fjs
+npm install @targoninc/fjs
 ```
 
 ## Usage
