@@ -20,14 +20,8 @@ jobs:
       - name: Verify NPM package version
         run: |
           PACKAGE_VERSION=$(npm show @targoninc/fjs version)
-          echo "Package version: ${PACKAGE_VERSION}"
-          echo "Package version in package.json: $(jq -r .version package.json)"
-          if [ -z "${PACKAGE_VERSION}" ]; then
-            echo "Package version is empty, aborting..."
-            exit 1
-          
           if [ "${PACKAGE_VERSION}" == "$(jq -r .version package.json)" ]; then
-            echo "Package version matches the version in package.json"
+            echo "Package version already matches the version in package.json, skipping publish..."
             exit 0
           else
             echo "Package version does not match the version in package.json, publishing..."
