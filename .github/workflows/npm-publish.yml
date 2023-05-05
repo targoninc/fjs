@@ -19,9 +19,13 @@ jobs:
         run: npm ci
       - name: Verify NPM package version
         run: |
-          PACKAGE_VERSION=$(npm ls | grep my-package-name | awk -F@ '{print $2}')
+          PACKAGE_VERSION=$(npm ls | grep @targoninc/fjs | awk -F@ '{print $2}')
           echo "Package version: ${PACKAGE_VERSION}"
           echo "Package version in package.json: $(jq -r .version package.json)"
+          if [ -z "${PACKAGE_VERSION}" ]; then
+            echo "Package version is empty, aborting..."
+            exit 1
+          
           if [ "${PACKAGE_VERSION}" == "$(jq -r .version package.json)" ]; then
             echo "Package version matches the version in package.json"
             exit 0
