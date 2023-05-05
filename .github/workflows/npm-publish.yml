@@ -21,8 +21,8 @@ jobs:
         run: |
           PACKAGE_VERSION=$(npm show @targoninc/fjs version)
           if [ "${PACKAGE_VERSION}" == "$(jq -r .version package.json)" ]; then
-            echo "Package version already matches the version in package.json, skipping publish..."
-            exit 0
+            echo "Package version already matches the version in package.json, skipping publish and aborting workflow..."
+            exit 1
           else
             echo "Package version does not match the version in package.json, publishing..."
           fi
