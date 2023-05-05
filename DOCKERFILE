@@ -1,0 +1,26 @@
+FROM php:8.2-apache-bullseye as php
+
+RUN apt-get update && \
+    apt-get install -y libcurl4-openssl-dev pkg-config libssl-dev
+
+RUN a2enmod rewrite
+RUN a2enmod headers
+
+RUN echo "display_errors = Off" >> /usr/local/etc/php/php.ini
+RUN sed -i 's/ErrorLog .*/ErrorLog \/var\/log\/apache2\/error.log/' /etc/apache2/sites-available/000-default.conf
+
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html
+
+COPY . /var/www/html
+WORKDIR /var/www/html
+RUN ls -la
+
+RUN rm -rf DOCKERFILE
+RUN rm -rf .gitignore
+RUN rm -rf .git
+RUN rm -rf .gitignore.bak
+
+RUN service apache2 restart
+
+CMD ["apache2-foreground"]
