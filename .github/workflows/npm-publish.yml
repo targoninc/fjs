@@ -20,6 +20,8 @@ jobs:
       - name: Verify NPM package version
         run: |
           PACKAGE_VERSION=$(npm ls | grep my-package-name | awk -F@ '{print $2}')
+          echo "Package version: ${PACKAGE_VERSION}"
+          echo "Package version in package.json: $(jq -r .version package.json)"
           if [ "${PACKAGE_VERSION}" == "$(jq -r .version package.json)" ]; then
             echo "Package version matches the version in package.json"
             exit 0
