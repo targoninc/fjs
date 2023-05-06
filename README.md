@@ -1,6 +1,7 @@
 # fjs (factory js)
 
 [![npm Package](https://github.com/targoninc/fjs/actions/workflows/npm-publish.yml/badge.svg?branch=main)](https://github.com/targoninc/fjs/actions/workflows/npm-publish.yml)
+[![Docker Image](https://github.com/targoninc/fjs/actions/workflows/docker-image.yml/badge.svg)](https://github.com/targoninc/fjs/actions/workflows/docker-image.yml)
 
 ## Installation
 
