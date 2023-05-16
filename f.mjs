@@ -534,4 +534,14 @@ export class DomNode {
         this._node.novalidate = novalidate;
         return this;
     }
+
+    width(width) {
+        this._node.width = width;
+        return this;
+    }
+
+    height(height) {
+        this._node.height = height;
+        return this;
+    }
 }
