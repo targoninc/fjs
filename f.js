@@ -77,7 +77,11 @@ export class DomNode {
     }
 
     children() {
-        this._node.append(...arguments);
+        for (let node of arguments) {
+            if (node instanceof HTMLElement) {
+                this._node.appendChild(node);
+            }
+        }
         return this;
     }
 
