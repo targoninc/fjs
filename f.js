@@ -71,6 +71,11 @@ export class DomNode {
         return this;
     }
 
+    title(title) {
+        this._node.title = title;
+        return this;
+    }
+
     html(html) {
         this._node.innerHTML = html;
         return this;
