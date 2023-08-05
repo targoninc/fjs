@@ -116,6 +116,11 @@ export class DomNode {
         return this;
     }
 
+    onauxclick(callback) {
+        this._node.onauxclick = callback;
+        return this;
+    }
+
     ondblclick(callback) {
         this._node.ondblclick = callback;
         return this;
