@@ -85,6 +85,12 @@ export class DomNode {
         for (let node of arguments) {
             if (node instanceof HTMLElement) {
                 this._node.appendChild(node);
+            } else if (node instanceof DomNode) {
+                this._node.appendChild(node.build());
+            } else {
+                if (node) {
+                    console.warn('Invalid node type. Must be an HTMLElement or a subclass.', node);
+                }
             }
         }
         return this;
