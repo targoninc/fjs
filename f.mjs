@@ -140,7 +140,7 @@ export class DomNode {
             } else if (node instanceof DomNode) {
                 this._node.appendChild(node.build());
                 console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
-            } else if (node.constructor === FjsObservable) {
+            } else if (node && node.constructor === FjsObservable) {
                 const childNode = node.value;
                 this._node.appendChild(childNode);
                 node.onUpdate = (newValue) => {
