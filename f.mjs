@@ -69,7 +69,7 @@ export class DomNode {
     }
 
     wrapProperty(property, value) {
-        if (value.constructor === FjsObservable) {
+        if (value && value.constructor === FjsObservable) {
             this._node[property] = value.value;
             value.onUpdate = (newValue) => {
                 this._node[property] = newValue;
@@ -508,7 +508,7 @@ export class DomNode {
                 if (key.constructor !== String) {
                     throw new Error('Invalid key type for styles. Must be a string.');
                 }
-                if (value.constructor === FjsObservable) {
+                if (value && value.constructor === FjsObservable) {
                     this._node.style[key] = value.value;
                     value.onUpdate = (newValue) => {
                         this._node.style[key] = newValue;
