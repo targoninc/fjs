@@ -98,7 +98,7 @@ export class DomNode {
                 const key = arguments[i];
                 const value = arguments[i + 1];
                 TypeHelper.assertString(key, 'attributes/key');
-                if (value.constructor === FjsObservable) {
+                if (value && value.constructor === FjsObservable) {
                     this._node.setAttribute(key, value.value);
                     value.onUpdate = (newValue) => {
                         this._node.setAttribute(key, newValue);
