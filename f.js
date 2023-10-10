@@ -523,6 +523,16 @@ export class DomNode {
         return this;
     }
 
+    width(width) {
+        this.wrapProperty('width', width);
+        return this;
+    }
+
+    height(height) {
+        this.wrapProperty('height', height);
+        return this;
+    }
+
     type(type) {
         this.wrapProperty('type', type);
         return this;
