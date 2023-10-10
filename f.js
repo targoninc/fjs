@@ -22,6 +22,38 @@ export class TypeHelper {
     }
 }
 
+export class FjsObservable {
+    _callbacks = [];
+    _value;
+
+    constructor(initialValue, updateCallback = () => {
+    }) {
+        this._value = initialValue;
+        this._callbacks.push(updateCallback);
+    }
+
+    unsubscribeAll() {
+        this._callbacks = [];
+    }
+
+    get onUpdate() {
+        return this._callbacks;
+    }
+
+    set onUpdate(callback) {
+        this._callbacks.push(callback);
+    }
+
+    get value() {
+        return this._value;
+    }
+
+    set value(value) {
+        this._value = value;
+        this._callbacks.forEach(callback => callback(value));
+    }
+}
+
 export class DomNode {
     _node;
 
@@ -34,6 +66,17 @@ export class DomNode {
             throw new Error('Invalid node type. Must be an HTMLElement or a subclass.');
         }
         return this._node;
+    }
+
+    wrapProperty(property, value) {
+        if (value.constructor === FjsObservable) {
+            this._node[property] = value.value;
+            value.onUpdate = (newValue) => {
+                this._node[property] = newValue;
+            };
+        } else {
+            this._node[property] = value;
+        }
     }
 
     class(className) {
@@ -52,8 +95,17 @@ export class DomNode {
     attributes() {
         if (arguments.length % 2 === 0) {
             for (let i = 0; i < arguments.length; i += 2) {
-                TypeHelper.assertString(arguments[i], 'attributes/key');
-                this._node.setAttribute(arguments[i], arguments[i + 1]);
+                const key = arguments[i];
+                const value = arguments[i + 1];
+                TypeHelper.assertString(key, 'attributes/key');
+                if (value.constructor === FjsObservable) {
+                    this._node.setAttribute(key, value.value);
+                    value.onUpdate = (newValue) => {
+                        this._node.setAttribute(key, newValue);
+                    };
+                } else {
+                    this._node.setAttribute(key, value);
+                }
             }
         } else {
             throw new Error('Invalid number of arguments for attributes. Must be even. (key, value, key, value, ...)');
@@ -62,22 +114,22 @@ export class DomNode {
     }
 
     id(id) {
-        this._node.id = id;
+        this.wrapProperty('id', id);
         return this;
     }
 
     text(text) {
-        this._node.innerText = text;
+        this.wrapProperty('innerText', text);
         return this;
     }
 
     title(title) {
-        this._node.title = title;
+        this.wrapProperty('title', title);
         return this;
     }
 
     html(html) {
-        this._node.innerHTML = html;
+        this.wrapProperty('innerHTML', html);
         return this;
     }
 
@@ -88,6 +140,12 @@ export class DomNode {
             } else if (node instanceof DomNode) {
                 this._node.appendChild(node.build());
                 console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
+            } else if (node.constructor === FjsObservable) {
+                const childNode = node.value;
+                this._node.appendChild(childNode);
+                node.onUpdate = (newValue) => {
+                    this._node.replaceChild(newValue, childNode);
+                };
             } else {
                 if (node) {
                     console.warn('Invalid node type. Must be an HTMLElement or a subclass.', node);
@@ -102,7 +160,7 @@ export class DomNode {
     }
 
     role(role) {
-        this._node.role = role;
+        this.wrapProperty('role', role);
         return this;
     }
 
@@ -424,12 +482,12 @@ export class DomNode {
     }
 
     src(src) {
-        this._node.src = src;
+        this.wrapProperty('src', src);
         return this;
     }
 
     alt(alt) {
-        this._node.alt = alt;
+        this.wrapProperty('alt', alt);
         return this;
     }
 
@@ -445,10 +503,19 @@ export class DomNode {
     styles() {
         if (arguments.length % 2 === 0) {
             for (let i = 0; i < arguments.length; i += 2) {
-                if (arguments[i].constructor !== String) {
+                const key = arguments[i];
+                const value = arguments[i + 1];
+                if (key.constructor !== String) {
                     throw new Error('Invalid key type for styles. Must be a string.');
                 }
-                this._node.style[arguments[i]] = arguments[i + 1];
+                if (value.constructor === FjsObservable) {
+                    this._node.style[key] = value.value;
+                    value.onUpdate = (newValue) => {
+                        this._node.style[key] = newValue;
+                    };
+                } else {
+                    this._node.style[key] = value;
+                }
             }
         } else {
             throw new Error('Invalid number of arguments for styles. Must be even. (key, value, key, value, ...)');
@@ -457,102 +524,102 @@ export class DomNode {
     }
 
     type(type) {
-        this._node.type = type;
+        this.wrapProperty('type', type);
         return this;
     }
 
     name(name) {
-        this._node.name = name;
+        this.wrapProperty('name', name);
         return this;
     }
 
     value(value) {
-        this._node.value = value;
+        this.wrapProperty('value', value);
         return this;
     }
 
     placeholder(placeholder) {
-        this._node.placeholder = placeholder;
+        this.wrapProperty('placeholder', placeholder);
         return this;
     }
 
     for(forId) {
-        this._node.for = forId;
+        this.wrapProperty('for', forId);
         return this;
     }
 
     checked(checked) {
-        this._node.checked = checked;
+        this.wrapProperty('checked', checked);
         return this;
     }
 
     disabled(disabled) {
-        this._node.disabled = disabled;
+        this.wrapProperty('disabled', disabled);
         return this;
     }
 
     selected(selected) {
-        this._node.selected = selected;
+        this.wrapProperty('selected', selected);
         return this;
     }
 
     href(href) {
-        this._node.href = href;
+        this.wrapProperty('href', href);
         return this;
     }
 
     target(target) {
-        this._node.target = target;
+        this.wrapProperty('target', target);
         return this;
     }
 
     rel(rel) {
-        this._node.rel = rel;
+        this.wrapProperty('rel', rel);
         return this;
     }
 
     required(required) {
-        this._node.required = required;
+        this.wrapProperty('required', required);
         return this;
     }
 
     multiple(multiple) {
-        this._node.multiple = multiple;
+        this.wrapProperty('multiple', multiple);
         return this;
     }
 
     accept(accept) {
-        this._node.accept = accept;
+        this.wrapProperty('accept', accept);
         return this;
     }
 
     acceptCharset(acceptCharset) {
-        this._node.acceptCharset = acceptCharset;
+        this.wrapProperty('acceptCharset', acceptCharset);
         return this;
     }
 
     action(action) {
-        this._node.action = action;
+        this.wrapProperty('action', action);
         return this;
     }
 
     autocomplete(autocomplete) {
-        this._node.autocomplete = autocomplete;
+        this.wrapProperty('autocomplete', autocomplete);
         return this;
     }
 
     enctype(enctype) {
-        this._node.enctype = enctype;
+        this.wrapProperty('enctype', enctype);
         return this;
     }
 
     method(method) {
-        this._node.method = method;
+        this.wrapProperty('method', method);
         return this;
     }
 
     novalidate(novalidate) {
-        this._node.novalidate = novalidate;
+        this.wrapProperty('novalidate', novalidate);
         return this;
     }
 }
