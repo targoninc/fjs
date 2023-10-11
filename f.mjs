@@ -84,7 +84,20 @@ export class DomNode {
     }
 
     classes() {
-        this._node.classList.add(...arguments);
+        const classes = [...arguments];
+        for (let cls of classes) {
+            if (cls && cls.constructor === FjsObservable) {
+                let previousValue = cls.value;
+                this._node.classList.add(previousValue);
+                cls.onUpdate = (newValue) => {
+                    this._node.classList.remove(previousValue);
+                    this._node.classList.add(newValue);
+                    previousValue = newValue;
+                };
+            } else {
+                this._node.classList.add(cls);
+            }
+        }
         return this;
     }
 
