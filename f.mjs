@@ -154,10 +154,11 @@ export class DomNode {
                 this._node.appendChild(node.build());
                 console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
-                const childNode = node.value;
+                let childNode = node.value;
                 this._node.appendChild(childNode);
                 node.onUpdate = (newValue) => {
                     this._node.replaceChild(newValue, childNode);
+                    childNode = newValue;
                 };
             } else {
                 if (node) {
