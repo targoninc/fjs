@@ -84,7 +84,20 @@ export class DomNode {
     }
 
     classes() {
-        this._node.classList.add(...arguments);
+        const classes = [...arguments];
+        for (let cls of classes) {
+            if (cls && cls.constructor === FjsObservable) {
+                let previousValue = cls.value;
+                this._node.classList.add(previousValue);
+                cls.onUpdate = (newValue) => {
+                    this._node.classList.remove(previousValue);
+                    this._node.classList.add(newValue);
+                    previousValue = newValue;
+                };
+            } else {
+                this._node.classList.add(cls);
+            }
+        }
         return this;
     }
 
@@ -141,10 +154,11 @@ export class DomNode {
                 this._node.appendChild(node.build());
                 console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
-                const childNode = node.value;
+                let childNode = node.value;
                 this._node.appendChild(childNode);
                 node.onUpdate = (newValue) => {
                     this._node.replaceChild(newValue, childNode);
+                    childNode = newValue;
                 };
             } else {
                 if (node) {
