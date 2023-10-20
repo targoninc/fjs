@@ -148,7 +148,8 @@ export class DomNode {
                 };
             } else {
                 if (node) {
-                    console.warn('Invalid node type. Must be an HTMLElement or a subclass.', node);
+                    const stackTrace = new Error().stack;
+                    console.warn('Invalid node type. Must be an HTMLElement or a subclass.', node, stackTrace);
                 }
             }
         }
