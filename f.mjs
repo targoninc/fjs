@@ -500,6 +500,11 @@ export class DomNode {
         return this;
     }
 
+    on(eventName, callback) {
+        this._node.addEventListener(eventName, callback);
+        return this;
+    }
+
     src(src) {
         this.wrapProperty('src', src);
         return this;
