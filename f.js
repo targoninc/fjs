@@ -160,6 +160,10 @@ export class DomNode {
                     this._node.replaceChild(newValue, childNode);
                     childNode = newValue;
                 };
+            } else if (node && node.constructor === Array) {
+                for (let childNode of node) {
+                    this.children(childNode);
+                }
             } else {
                 if (node) {
                     const stackTrace = new Error().stack;
