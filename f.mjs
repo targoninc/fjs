@@ -505,6 +505,11 @@ export class DomNode {
         return this;
     }
 
+    open(open) {
+        this.wrapProperty('open', open);
+        return this;
+    }
+
     src(src) {
         this.wrapProperty('src', src);
         return this;
