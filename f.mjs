@@ -155,9 +155,17 @@ export class DomNode {
                 console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
                 let childNode = node.value;
-                this._node.appendChild(childNode);
+                if (childNode instanceof HTMLElement) {
+                    this._node.appendChild(childNode);
+                }
                 node.onUpdate = (newValue) => {
-                    this._node.replaceChild(newValue, childNode);
+                    if (newValue instanceof HTMLElement) {
+                        if (childNode instanceof HTMLElement) {
+                            this._node.replaceChild(newValue, childNode);
+                        } else {
+                            this._node.appendChild(newValue);
+                        }
+                    }
                     childNode = newValue;
                 };
             } else if (node && node.constructor === Array) {
