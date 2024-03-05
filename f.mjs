@@ -2,6 +2,214 @@ export class FJS {
     static create(tag = 'div') {
         return new DomNode(tag);
     }
+
+    static signal(initialValue) {
+        return new FjsObservable(initialValue);
+    }
+
+    static div() {
+        return FJS.create('div');
+    }
+
+    static span() {
+        return FJS.create('span');
+    }
+
+    static p() {
+        return FJS.create('p');
+    }
+
+    static a() {
+        return FJS.create('a');
+    }
+
+    static img() {
+        return FJS.create('img');
+    }
+
+    static input() {
+        return FJS.create('input');
+    }
+
+    static button() {
+        return FJS.create('button');
+    }
+
+    static label() {
+        return FJS.create('label');
+    }
+
+    static form() {
+        return FJS.create('form');
+    }
+
+    static select() {
+        return FJS.create('select');
+    }
+
+    static option() {
+        return FJS.create('option');
+    }
+
+    static textarea() {
+        return FJS.create('textarea');
+    }
+
+    static header() {
+        return FJS.create('header');
+    }
+
+    static footer() {
+        return FJS.create('footer');
+    }
+
+    static main() {
+        return FJS.create('main');
+    }
+
+    static section() {
+        return FJS.create('section');
+    }
+
+    static article() {
+        return FJS.create('article');
+    }
+
+    static aside() {
+        return FJS.create('aside');
+    }
+
+    static nav() {
+        return FJS.create('nav');
+    }
+
+    static ul() {
+        return FJS.create('ul');
+    }
+
+    static ol() {
+        return FJS.create('ol');
+    }
+
+    static li() {
+        return FJS.create('li');
+    }
+
+    static h1() {
+        return FJS.create('h1');
+    }
+
+    static h2() {
+        return FJS.create('h2');
+    }
+
+    static h3() {
+        return FJS.create('h3');
+    }
+
+    static h4() {
+        return FJS.create('h4');
+    }
+
+    static h5() {
+        return FJS.create('h5');
+    }
+
+    static h6() {
+        return FJS.create('h6');
+    }
+
+    static table() {
+        return FJS.create('table');
+    }
+
+    static thead() {
+        return FJS.create('thead');
+    }
+
+    static tbody() {
+        return FJS.create('tbody');
+    }
+
+    static tr() {
+        return FJS.create('tr');
+    }
+
+    static th() {
+        return FJS.create('th');
+    }
+
+    static td() {
+        return FJS.create('td');
+    }
+
+    static strong() {
+        return FJS.create('strong');
+    }
+
+    static em() {
+        return FJS.create('em');
+    }
+
+    static i() {
+        return FJS.create('i');
+    }
+
+    static b() {
+        return FJS.create('b');
+    }
+
+    static u() {
+        return FJS.create('u');
+    }
+
+    static s() {
+        return FJS.create('s');
+    }
+
+    static code() {
+        return FJS.create('code');
+    }
+
+    static pre() {
+        return FJS.create('pre');
+    }
+
+    static blockquote() {
+        return FJS.create('blockquote');
+    }
+
+    static hr() {
+        return FJS.create('hr');
+    }
+
+    static br() {
+        return FJS.create('br');
+    }
+
+    static canvas() {
+        return FJS.create('canvas');
+    }
+
+    static video() {
+        return FJS.create('video');
+    }
+
+    static audio() {
+        return FJS.create('audio');
+    }
+
+    static iframe() {
+        return FJS.create('iframe');
+    }
+}
+
+export function create(tag) {
+    return FJS.create(tag);
+}
+
+export function signal(initialValue) {
+    return FJS.signal(initialValue);
 }
 
 export class TypeHelper {
@@ -34,6 +242,17 @@ export class FjsObservable {
 
     unsubscribeAll() {
         this._callbacks = [];
+    }
+
+    subscribe(callback) {
+        this._callbacks.push(callback);
+    }
+
+    unsubscribe(callback) {
+        const index = this._callbacks.indexOf(callback);
+        if (index >= 0) {
+            this._callbacks.splice(index, 1);
+        }
     }
 
     get onUpdate() {
