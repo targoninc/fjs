@@ -47,25 +47,39 @@ As an example, we'll create two files: `test.mjs` and `test.html`.
 
 `test.mjs`
 ```js
-import { FJS } from '@targon/fjs';
+import { create, signal } from '@targon/fjs';
 
-const testElement = testClass => {
-    return FJS.create("span")
-        .classes(testClass, 'border')
+// elements make sense to be created in a function
+function testElement(classes = []) {
+    const text = signal('test');
+    
+    return create("span")
+        .classes('border', ...classes)
         .attributes('data-test', 'test', 'data-test2', 'test2')
-        .text('test text')
+        // signals can be passed to any attribute and they will be updated when the signal's value is updated
+        .text(text)
         .onclick(() => {
-            console.log('test');
+            // signals can be updated to update the text of the element
+            text.value = 'clicked';
         })
-        .children(testChild())
+        // children can be created by passing them as arguments to the children method
+        .children(testChild(text))
         .build();
-};
-const testChild = () => {
-    return FJS.create("span")
+}
+
+function testChild(text) {
+    const childText = signal(text.value + " in child");
+    // subscribe to the parent signal to update the child signal
+    text.subscribe((value) => {
+        childText.value = value + " in child";
+    });
+    
+    return create("span")
         .classes('border')
-        .text('test child').build();
-};
+        .text(childText)
+        .build();
+}
 
 const app = document.querySelector('#app');
-app.appendChild(testElement('testClass'));
+app.appendChild(testElement(['testClass']));
 ```
