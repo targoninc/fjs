@@ -212,6 +212,30 @@ export function signal(initialValue) {
     return FJS.signal(initialValue);
 }
 
+export function nullElement() {
+    return create("div").styles("display", "none").build();
+}
+
+export function ifjs(condition, element) {
+    if (condition.constructor === FjsObservable) {
+        const state = signal(element);
+        condition.onUpdate = (newValue) => {
+            if (newValue) {
+                state.value = element;
+            } else {
+                state.value = nullElement();
+            }
+        };
+        return state;
+    } else {
+        return condition ? element : null;
+    }
+}
+
+export function stack(message, debugInfo = {}) {
+    console.warn(message, { debugInfo }, (new Error()).stack);
+}
+
 export class TypeHelper {
     static assertString(value, valueName = 'value') {
         const result = value.constructor === String;
@@ -371,21 +395,21 @@ export class DomNode {
                 this._node.appendChild(node);
             } else if (node instanceof DomNode) {
                 this._node.appendChild(node.build());
-                console.warn('Called .build() for you. You should call .build() yourself to avoid this warning.');
+                stack('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
                 let childNode = node.value;
-                if (childNode instanceof HTMLElement) {
-                    this._node.appendChild(childNode);
+                if (!(childNode instanceof HTMLElement)) {
+                    // Create a placeholder div if the value is not an HTMLElement so we can swap it out later
+                    childNode = nullElement();
                 }
+                this._node.appendChild(childNode);
                 node.onUpdate = (newValue) => {
                     if (newValue instanceof HTMLElement) {
-                        if (childNode instanceof HTMLElement) {
-                            this._node.replaceChild(newValue, childNode);
-                        } else {
-                            this._node.appendChild(newValue);
-                        }
+                        this._node.replaceChild(newValue, childNode);
+                        childNode = newValue;
+                    } else {
+                        stack('Unexpected value for child. Must be an HTMLElement or a subclass.', newValue);
                     }
-                    childNode = newValue;
                 };
             } else if (node && node.constructor === Array) {
                 for (let childNode of node) {
@@ -393,8 +417,7 @@ export class DomNode {
                 }
             } else {
                 if (node) {
-                    const stackTrace = new Error().stack;
-                    console.warn('Invalid node type. Must be an HTMLElement or a subclass.', node, stackTrace);
+                    stack('Invalid node type. Must be an HTMLElement or a subclass.', node);
                 }
             }
         }
