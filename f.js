@@ -216,16 +216,16 @@ export function nullElement() {
     return create("div").styles("display", "none").build();
 }
 
-export function ifjs(condition, element) {
+export function ifjs(condition, element, inverted = false) {
     if (condition.constructor === FjsObservable) {
-        const state = signal(condition.value ? element : nullElement());
-        condition.onUpdate = (newValue) => {
+        const state = signal(condition.value ? (inverted ? nullElement() : element) : (inverted ? element : nullElement()));
+        condition.subscribe((newValue) => {
             if (newValue) {
-                state.value = element;
+                state.value = inverted ? nullElement() : element;
             } else {
-                state.value = nullElement();
+                state.value = inverted ? element : nullElement();
             }
-        };
+        });
         return state;
     } else {
         return condition ? element : null;
