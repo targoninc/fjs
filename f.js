@@ -218,7 +218,7 @@ export function nullElement() {
 
 export function ifjs(condition, element) {
     if (condition.constructor === FjsObservable) {
-        const state = signal(element);
+        const state = signal(condition.value ? element : nullElement());
         condition.onUpdate = (newValue) => {
             if (newValue) {
                 state.value = element;
