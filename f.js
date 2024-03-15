@@ -228,7 +228,7 @@ export function ifjs(condition, element, inverted = false) {
         });
         return state;
     } else {
-        return condition ? element : null;
+        return condition ? (inverted ? nullElement() : element) : (inverted ? element : nullElement());
     }
 }
 
