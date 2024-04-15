@@ -254,16 +254,82 @@ export class TypeHelper {
     }
 }
 
+export class FjsStore {
+    static keyName = "__fjs_store__";
+
+    static get(key) {
+        return window[this.keyName][key];
+    }
+
+    static set(key, value) {
+        window[this.keyName][key] = value;
+    }
+
+    static clear() {
+        window[this.keyName] = {};
+    }
+
+    static remove(key) {
+        delete window[this.keyName][key];
+    }
+
+    static getAll() {
+        return window[this.keyName];
+    }
+
+    static keys() {
+        return Object.keys(window[this.keyName]);
+    }
+
+    static values() {
+        return Object.values(window[this.keyName]);
+    }
+
+    static getSignalValue(key) {
+        return this.get(key).value;
+    }
+
+    static setSignalValue(key, value) {
+        this.get(key).value = value;
+    }
+}
+
+export function store() {
+    if (!window[FjsStore.keyName]) {
+        window[FjsStore.keyName] = {};
+    }
+    return FjsStore;
+}
+
 export class FjsObservable {
     _callbacks = [];
     _value;
     _values = {};
 
     constructor(initialValue, updateCallback = () => {
-    }) {
+    }, key = null) {
         this._value = initialValue;
         this._values = {};
         this._callbacks.push(updateCallback);
+        if (key) {
+            store().set(key, this);
+        }
+    }
+
+    /**
+     * Creates an object with boolean signals that update when {this} updates.
+     * @param assignments {Object} e.g. { someKey: { onTrue: value1, onFalse: value2 } }
+     */
+    boolValues(assignments = {}) {
+        for (let key in assignments) {
+            this._values[key] = signal(this._value ? assignments[key].onTrue : assignments[key].onFalse);
+        }
+        this.subscribe((newValue) => {
+            for (let key in assignments) {
+                this._values[key].value = newValue ? assignments[key].onTrue : assignments[key].onFalse;
+            }
+        });
+        return this._values;
     }
 
     /**
