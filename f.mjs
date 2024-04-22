@@ -232,6 +232,31 @@ export function ifjs(condition, element, inverted = false) {
     }
 }
 
+/**
+ *
+ * @param arrayState {FjsObservable} An FjsObservable that represents an array.
+ * @param wrapper {DomNode} A DomNode that will be used to wrap each element of the array. DO NOT CALL .build() on this.
+ * @param callback {Function} A function that will be called with the new value of the arrayState.
+ * @returns {*}
+ */
+export function signalMap(arrayState, wrapper, callback) {
+    if (arrayState.constructor !== FjsObservable) {
+        throw new Error('Invalid argument type for signalMap. Must be an FjsObservable.');
+    }
+
+    const update = (newValue) => {
+        const children = [];
+        for (let item of newValue) {
+            children.push(callback(item));
+        }
+        wrapper.overwriteChildren(...children);
+    };
+    arrayState.subscribe(update);
+    update(arrayState.value);
+
+    return wrapper.build();
+}
+
 export function stack(message, debugInfo = {}) {
     console.warn(message, { debugInfo }, (new Error()).stack);
 }
@@ -338,7 +363,7 @@ export class FjsObservable {
      */
     boolValues(assignments = {}) {
         for (let key in assignments) {
-             this._values[key] = signal(this._value ? assignments[key].onTrue : assignments[key].onFalse);
+            this._values[key] = signal(this._value ? assignments[key].onTrue : assignments[key].onFalse);
         }
         this.subscribe((newValue) => {
             for (let key in assignments) {
@@ -506,6 +531,11 @@ export class DomNode {
             }
         }
         return this;
+    }
+
+    overwriteChildren() {
+        this._node.innerHTML = '';
+        return this.children(...arguments);
     }
 
     child() {
