@@ -357,22 +357,6 @@ export class FjsObservable {
         return this._values;
     }
 
-    /**
-     *
-     * @param assignments {Object} e.g. { someKey: { onTrue: value1, onFalse: value2 } }
-     */
-    boolValues(assignments = {}) {
-        for (let key in assignments) {
-            this._values[key] = signal(this._value ? assignments[key].onTrue : assignments[key].onFalse);
-        }
-        this.subscribe((newValue) => {
-            for (let key in assignments) {
-                this._values[key].value = newValue ? assignments[key].onTrue : assignments[key].onFalse;
-            }
-        });
-        return this._values;
-    }
-
     unsubscribeAll() {
         this._callbacks = [];
     }
@@ -401,8 +385,9 @@ export class FjsObservable {
     }
 
     set value(value) {
+        const changed = this._value !== value;
         this._value = value;
-        this._callbacks.forEach(callback => callback(value));
+        this._callbacks.forEach(callback => callback(value, changed));
     }
 }
 
