@@ -257,6 +257,19 @@ export function signalMap(arrayState, wrapper, callback) {
     return wrapper.build();
 }
 
+/**
+ * Short wrapper to make dependent signals easier.
+ * @param sourceSignal {FjsObservable} Whenever the source signal is updated, the updateMethod gets called to update the output signal.
+ * @param updateMethod {Function} Should return the value to update the output signal with.
+ */
+export function computedSignal(sourceSignal, updateMethod) {
+    const returnSignal = signal(updateMethod(sourceSignal.value));
+    sourceSignal.subscribe((newVal) => {
+        returnSignal.value = updateMethod(newVal);
+    });
+    return returnSignal;
+}
+
 export function stack(message, debugInfo = {}) {
     console.warn(message, { debugInfo }, (new Error()).stack);
 }
