@@ -217,7 +217,7 @@ export function nullElement() {
 }
 
 export function ifjs(condition, element, inverted = false) {
-    if (condition.constructor === FjsObservable) {
+    if (condition && condition.constructor === FjsObservable) {
         const state = signal(condition.value ? (inverted ? nullElement() : element) : (inverted ? element : nullElement()));
         condition.subscribe((newValue) => {
             if (newValue) {
