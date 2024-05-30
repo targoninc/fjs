@@ -270,6 +270,10 @@ export function computedSignal(sourceSignal, updateMethod) {
     return returnSignal;
 }
 
+export function signalFromProperty(sourceSignal, propertyName) {
+    return computedSignal(sourceSignal, (source) => source[propertyName]);
+}
+
 export function stack(message, debugInfo = {}) {
     console.warn(message, { debugInfo }, (new Error()).stack);
 }
