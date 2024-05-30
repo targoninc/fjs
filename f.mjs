@@ -271,7 +271,12 @@ export function computedSignal(sourceSignal, updateMethod) {
 }
 
 export function signalFromProperty(sourceSignal, propertyName) {
-    return computedSignal(sourceSignal, (source) => source[propertyName]);
+    return computedSignal(sourceSignal, (source) => {
+        if (!source) {
+            return null;
+        }
+        return source[propertyName];
+    });
 }
 
 export function stack(message, debugInfo = {}) {
