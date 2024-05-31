@@ -245,6 +245,9 @@ export function signalMap(arrayState, wrapper, callback) {
     }
 
     const update = (newValue) => {
+        if (!newValue) {
+            return;
+        }
         const children = [];
         for (let item of newValue) {
             children.push(callback(item));
@@ -265,7 +268,11 @@ export function signalMap(arrayState, wrapper, callback) {
 export function computedSignal(sourceSignal, updateMethod) {
     const returnSignal = signal(updateMethod(sourceSignal.value));
     sourceSignal.subscribe((newVal) => {
-        returnSignal.value = updateMethod(newVal);
+        try {
+            returnSignal.value = updateMethod(newVal);
+        } catch (e) {
+            returnSignal.value = null;
+        }
     });
     return returnSignal;
 }
