@@ -217,7 +217,7 @@ export function nullElement() {
 }
 
 export function ifjs(condition, element, inverted = false) {
-    if (condition.constructor === FjsObservable) {
+    if (condition && condition.constructor === FjsObservable) {
         const state = signal(condition.value ? (inverted ? nullElement() : element) : (inverted ? element : nullElement()));
         condition.subscribe((newValue) => {
             if (newValue) {
@@ -245,6 +245,9 @@ export function signalMap(arrayState, wrapper, callback) {
     }
 
     const update = (newValue) => {
+        if (!newValue) {
+            return;
+        }
         const children = [];
         for (let item of newValue) {
             children.push(callback(item));
@@ -255,6 +258,32 @@ export function signalMap(arrayState, wrapper, callback) {
     update(arrayState.value);
 
     return wrapper.build();
+}
+
+/**
+ * Short wrapper to make dependent signals easier.
+ * @param sourceSignal {FjsObservable} Whenever the source signal is updated, the updateMethod gets called to update the output signal.
+ * @param updateMethod {Function} Should return the value to update the output signal with.
+ */
+export function computedSignal(sourceSignal, updateMethod) {
+    const returnSignal = signal(updateMethod(sourceSignal.value));
+    sourceSignal.subscribe((newVal) => {
+        try {
+            returnSignal.value = updateMethod(newVal);
+        } catch (e) {
+            returnSignal.value = null;
+        }
+    });
+    return returnSignal;
+}
+
+export function signalFromProperty(sourceSignal, propertyName) {
+    return computedSignal(sourceSignal, (source) => {
+        if (!source) {
+            return null;
+        }
+        return source[propertyName];
+    });
 }
 
 export function stack(message, debugInfo = {}) {
