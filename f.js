@@ -432,7 +432,7 @@ export class DomNode {
     }
 
     build() {
-        if (!(this._node instanceof HTMLElement)) {
+        if (!(this._node instanceof HTMLElement) && !(this._node instanceof SVGElement)) {
             throw new Error('Invalid node type. Must be an HTMLElement or a subclass.');
         }
         return this._node;
