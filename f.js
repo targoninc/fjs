@@ -395,7 +395,11 @@ export class DomNode {
     _node;
 
     constructor(tag) {
-        this._node = document.createElement(tag);
+        if (tag === "svg") {
+            this._node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        } else {
+            this._node = document.createElement(tag);
+        }
     }
 
     build() {
