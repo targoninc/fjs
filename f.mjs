@@ -539,6 +539,9 @@ export class DomNode {
                     if (isValidElement(newValue)) {
                         this._node.replaceChild(newValue, childNode);
                         childNode = newValue;
+                    } else if (newValue.constructor === FjsObservable) {
+                        this._node.replaceChild(newValue.value, childNode);
+                        childNode = newValue.value;
                     } else {
                         stack('Unexpected value for child. Must be an HTMLElement or a subclass.', newValue);
                     }
