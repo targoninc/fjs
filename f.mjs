@@ -528,7 +528,6 @@ export class DomNode {
                 this._node.appendChild(node);
             } else if (node instanceof DomNode) {
                 this._node.appendChild(node.build());
-                stack('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
                 let childNode = node.value;
                 if (!isValidElement(childNode)) {
