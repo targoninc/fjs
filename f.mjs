@@ -420,15 +420,25 @@ export class FjsObservable {
     }
 }
 
+export function isValidElement(element) {
+    const validTypes = [HTMLElement, SVGElement];
+    return validTypes.some(type => element instanceof type);
+}
+
 export class DomNode {
     _node;
+    svgTags = ['svg', 'g', 'circle', 'ellipse', 'line', 'path', 'polygon', 'polyline', 'rect', 'text', 'textPath', 'tspan'];
 
     constructor(tag) {
-        this._node = document.createElement(tag);
+        if (this.svgTags.includes(tag)) {
+            this._node = document.createElementNS("http://www.w3.org/2000/svg", tag);
+        } else {
+            this._node = document.createElement(tag);
+        }
     }
 
     build() {
-        if (!(this._node instanceof HTMLElement)) {
+        if (!isValidElement(this._node)) {
             throw new Error('Invalid node type. Must be an HTMLElement or a subclass.');
         }
         return this._node;
@@ -514,22 +524,24 @@ export class DomNode {
 
     children() {
         for (let node of arguments) {
-            if (node instanceof HTMLElement) {
+            if (isValidElement(node)) {
                 this._node.appendChild(node);
             } else if (node instanceof DomNode) {
                 this._node.appendChild(node.build());
-                stack('Called .build() for you. You should call .build() yourself to avoid this warning.');
             } else if (node && node.constructor === FjsObservable) {
                 let childNode = node.value;
-                if (!(childNode instanceof HTMLElement)) {
+                if (!isValidElement(childNode)) {
                     // Create a placeholder div if the value is not an HTMLElement so we can swap it out later
                     childNode = nullElement();
                 }
                 this._node.appendChild(childNode);
                 node.onUpdate = (newValue) => {
-                    if (newValue instanceof HTMLElement) {
+                    if (isValidElement(newValue)) {
                         this._node.replaceChild(newValue, childNode);
                         childNode = newValue;
+                    } else if (newValue.constructor === DomNode) {
+                        this._node.replaceChild(newValue.build(), childNode);
+                        childNode = newValue.build();
                     } else {
                         stack('Unexpected value for child. Must be an HTMLElement or a subclass.', newValue);
                     }
