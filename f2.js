@@ -43,8 +43,8 @@ export function signalMap(arrayState, wrapper, callback) {
             return;
         }
         const children = [];
-        for (let item of newValue) {
-            children.push(callback(item));
+        for (let i = 0; i < newValue.length; i++) {
+            children.push(callback(newValue[i], i));
         }
         wrapper.overwriteChildren(...children);
     };
